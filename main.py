@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from executor import place_bet_and_get_barcode
+from matches import fetch_matches_for_date
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("parimatchia-bot")
@@ -66,6 +67,19 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+
+@app.get("/matches")
+def matches(date: str, authorization: Optional[str] = Header(None)):
+    """Récupère les vrais matchs football de coteetsport.ma pour la date YYYY-MM-DD."""
+    check_token(authorization)
+    log.info("Fetching matches for %s", date)
+    try:
+        items = fetch_matches_for_date(date)
+        return {"success": True, "date": date, "matches": items}
+    except Exception as e:
+        log.exception("Matches fetch failed")
+        return {"success": False, "error": str(e), "matches": []}
 
 
 @app.post("/reserve", response_model=TicketResponse)
