@@ -19,14 +19,6 @@ TARGET_URLS = [
     "https://www.coteetsport.ma/cote-sport/sport/football",
     "https://www.coteetsport.ma/cote-sport/sport/football/aujourdhui",
     "https://www.coteetsport.ma/cote-sport/sport/football/prochaines-3-heures",
-    "https://www.coteetsport.ma/cote-sport/sport/football/angleterre/premier-league",
-    "https://www.coteetsport.ma/cote-sport/sport/football/espagne/laliga",
-    "https://www.coteetsport.ma/cote-sport/sport/football/italie/serie-a",
-    "https://www.coteetsport.ma/cote-sport/sport/football/allemagne/bundesliga",
-    "https://www.coteetsport.ma/cote-sport/sport/football/france/ligue-1",
-    "https://www.coteetsport.ma/cote-sport/sport/football/uefa/ligue-des-champions",
-    "https://www.coteetsport.ma/cote-sport/sport/football/uefa/ligue-europa",
-    "https://www.coteetsport.ma/cote-sport/sport/football/maroc/botola-pro",
 ]
 
 
@@ -40,7 +32,7 @@ def fetch_matches_for_date(date_iso: str) -> List[Dict[str, Any]]:
             try:
                 page = ctx.new_page()
                 log.info("Loading %s", url)
-                page.goto(url, wait_until="domcontentloaded", timeout=45_000)
+                page.goto(url, wait_until="domcontentloaded", timeout=30_000)
                 # Cookie / popup
                 for sel in ['button:has-text("Accepter")', 'button:has-text("J\'accepte")',
                             'button[aria-label="close"]', '.close-popup']:
@@ -50,13 +42,13 @@ def fetch_matches_for_date(date_iso: str) -> List[Dict[str, Any]]:
                         pass
                 # Scroll pour déclencher le lazy-load
                 try:
-                    for _ in range(8):
-                        page.mouse.wheel(0, 4000)
-                        page.wait_for_timeout(600)
+                    for _ in range(15):
+                        page.mouse.wheel(0, 5000)
+                        page.wait_for_timeout(400)
                 except Exception:
                     pass
                 try:
-                    page.wait_for_selector('[data-event-id], .event-row, .match-row', timeout=8000)
+                    page.wait_for_selector('[data-event-id], .event-row, .match-row', timeout=6000)
                 except Exception:
                     pass
                 rows = page.query_selector_all('[data-event-id], .event-row, .match-row')
